@@ -5,6 +5,12 @@
 package frc.robot;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.config.PIDConstants;
+
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -18,6 +24,48 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+  }
+
+  public static class DrivetrainConstants
+  {
+    //CAN Id's for the driving and turning motors
+    public static final int kFrontLeftDrivingCANId = 10;
+    public static final int kFrontRightDrivingCANId = 12;
+    public static final int kBackLeftDrivingCANId = 14;
+    public static final int kBackRightDrivingCANId = 16;
+
+    public static final int kFrontLeftTurningCANId = 11;
+    public static final int kFrontRightTurningCANId = 13;
+    public static final int kBackLeftTurningCANId = 15;
+    public static final int kBackRightTurningCANId = 17;
+
+    //Not the maxium capable speed of the robot 
+    //but an allowed max speed of the robot
+    public static final double kMaxSpeedMetersPerSecond = 8;
+    public static final double kMaxAngularSpeed = 2*Math.PI; //radians per second
+
+    public static final double kTrackWidth = Units.inchesToMeters(24.5);
+    public static final double kWheelBase = Units.inchesToMeters(24.5);
+
+    public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+      new Translation2d(kWheelBase/2, kTrackWidth/2),
+      new Translation2d(kWheelBase/2, -kTrackWidth/2),
+      new Translation2d(-kWheelBase/2, kTrackWidth/2),
+      new Translation2d(-kWheelBase/2, -kTrackWidth/2));
+
+    //May be removed
+    //Use REV hardware client to remove offset in the wheels by zeroing them
+    //if that doesn't work record offset of the wheels when lined up
+    //Angular offsets of the modules relative to the chassis in radians
+    public static final double kFrontLeftChassisAngularOffset = -Math.PI/2;
+    public static final double kFrontRightChassisAngularOffset = 0;
+    public static final double kBackLeftChassisAngularOffset = Math.PI;
+    public static final double kBackRightChassisAngularOffset = Math.PI/2;
+
+   public static final PPHolonomicDriveController kPathFollowerConfig = new PPHolonomicDriveController(
+      new PIDConstants(5, 0, 0), 
+      new PIDConstants(5,0,0), 
+      kMaxSpeedMetersPerSecond);
   }
 
   public static class SwerveModuleConstants
