@@ -24,20 +24,24 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static final double kDriverDeadband = 0.05;
+    public static final double kDriverSensativity = 0.8;
+
+    public static final int kOperatorControllerPort = 1;
   }
 
   public static class DrivetrainConstants
   {
     //CAN Id's for the driving and turning motors
-    public static final int kFrontLeftDrivingCANId = 10;
-    public static final int kFrontRightDrivingCANId = 12;
-    public static final int kBackLeftDrivingCANId = 14;
-    public static final int kBackRightDrivingCANId = 16;
+    public static final int kFrontLeftDrivingCANId = 16;
+    public static final int kFrontRightDrivingCANId = 17;
+    public static final int kBackLeftDrivingCANId = 13;
+    public static final int kBackRightDrivingCANId = 15;
 
     public static final int kFrontLeftTurningCANId = 11;
-    public static final int kFrontRightTurningCANId = 13;
-    public static final int kBackLeftTurningCANId = 15;
-    public static final int kBackRightTurningCANId = 17;
+    public static final int kFrontRightTurningCANId = 10;
+    public static final int kBackLeftTurningCANId = 14;
+    public static final int kBackRightTurningCANId = 12;
 
     //Not the maxium capable speed of the robot 
     //but an allowed max speed of the robot
@@ -117,5 +121,35 @@ public final class Constants {
 
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
+  }
+
+  public static class EndEffectorConstants
+  {
+     //CAN Id's for the End Effector
+     public static final int kEndEffectorMotorCANId = 30;
+     public static final int kEndEffectorTiltCANId = 31;
+     public static final int kEndEffectorFingerCANId = 24;
+     public static final int kEndEffectorAlgaeCANId = 23;
+  }
+
+  public static class ElevatorConstants
+  {
+     //CAN Id's for the End Effector
+     public static final int kElevator1CANId = 25;
+     public static final int kElevator2CANId = 29;
+  }
+
+  public static class AlgaeIntakeConstants
+  {
+     //CAN Id's for the End Effector
+     public static final int kAlgaeRollerCANId = 27;
+     public static final int kAlgaeTiltCANId = 22;
+  }
+
+  public static class ClimberConstants
+  {
+     //CAN Id's for the End Effector
+     public static final int kClimberWinchCANId = 26;
+     public static final int kClimberGrabCANId = 32;
   }
 }

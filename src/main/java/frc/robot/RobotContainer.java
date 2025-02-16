@@ -5,10 +5,21 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.commands.AlgaeIntakeCommands.DeployArmCommand;
+import frc.robot.subsystems.AlgaeIntakeSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.EndEffectorSubsystem;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -19,36 +30,53 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  public static PowerDistribution pdh;
+
+  public static DriveSubsystem driveTrain;
+  public static ClimberSubsystem climber;
+  public static AlgaeIntakeSubsystem algaeIntake;
+  public static ElevatorSubsystem elevator;
+  public static EndEffectorSubsystem endEffector;
+
+  public static CommandXboxController driverController;
+  public static CommandXboxController operatorController;
+
+  private final SendableChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    pdh = new PowerDistribution();
+
+    driveTrain = new DriveSubsystem();
+    climber = new ClimberSubsystem();
+    algaeIntake = new AlgaeIntakeSubsystem();
+    elevator = new ElevatorSubsystem();
+    endEffector = new EndEffectorSubsystem();
+
+    driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+    operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser.setDefaultOption("NOTHING!!!", new InstantCommand());
+ 
+    driveTrain.setDefaultCommand(new RunCommand(
+      //left joystick controls translation
+      //right joystick controls rotation of the robot
+      () -> driveTrain.drive(
+        -MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.kDriverDeadband), 
+        -MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.kDriverDeadband), 
+        -MathUtil.applyDeadband(driverController.getRightX(), OperatorConstants.kDriverDeadband), 
+        true), 
+      driveTrain));
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
-
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+  private void configureBindings() 
+  {
+    // Algae Intake Commands
+    operatorController.a().whileTrue(new DeployArmCommand(0.5)); // TODO change speed
   }
 
   /**
@@ -58,6 +86,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return autoChooser.getSelected();
   }
 }
