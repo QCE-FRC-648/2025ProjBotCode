@@ -12,6 +12,11 @@ import frc.robot.commands.AlgaeIntakeCommands.RetractArmCommand;
 import frc.robot.commands.ClimberCommands.ExtendWinchCommand;
 import frc.robot.commands.ClimberCommands.GrabCageCommand;
 import frc.robot.commands.ClimberCommands.RetractWinchCommand;
+import frc.robot.commands.ElevatorCommands.ElevatorDownCommand;
+import frc.robot.commands.ElevatorCommands.ElevatorUpCommand;
+import frc.robot.commands.EndEffectorCommands.IntakeCommand;
+import frc.robot.commands.EndEffectorCommands.ShootCommand;
+import frc.robot.commands.EndEffectorCommands.TiltCommand;
 import frc.robot.subsystems.AlgaeIntakeSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -91,6 +96,15 @@ public class RobotContainer {
     operatorController.leftTrigger().whileTrue(new ExtendWinchCommand(0.1));
     operatorController.rightTrigger().whileTrue(new RetractWinchCommand(0.1));
     operatorController.povDown().whileTrue(new GrabCageCommand(0.1));
+
+    // Elevator
+    operatorController.povUp().whileTrue(new ElevatorUpCommand(0.1));
+    operatorController.povDown().whileTrue(new ElevatorDownCommand(0.1));
+
+    // End Effector
+    operatorController.povLeft().whileTrue(new IntakeCommand(0.1));
+    operatorController.povRight().whileTrue(new ShootCommand(0.1));
+    operatorController.povCenter().whileTrue(new TiltCommand(0.1));
   }
 
   /**

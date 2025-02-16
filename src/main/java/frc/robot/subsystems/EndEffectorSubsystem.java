@@ -20,4 +20,30 @@ public class EndEffectorSubsystem extends SubsystemBase
         endEffectorMotor = new SparkMax(EndEffectorConstants.kEndEffectorMotorCANId, MotorType.kBrushless);
         endEffectorTilt = new SparkMax(EndEffectorConstants.kEndEffectorTiltCANId, MotorType.kBrushless);
     }
+
+    public void setSpeedEndEffectorAlgae(double speed) 
+    {
+        endEffectorAlgae.set(speed);
+    }
+    
+    public void setSpeedEndEffectorFinger(double speed) 
+    {
+        endEffectorFinger.set(speed);
+    }
+
+    public void setSpeedEndEffectorMotor(double speed) 
+    {
+        endEffectorMotor.set(speed);
+    }
+
+    public void setSpeedEndEffectorTilt(double speed) 
+    {
+        endEffectorTilt.set(speed);
+    }
+
+    @Override
+    public void periodic()
+    {
+        
+    }
 }

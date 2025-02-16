@@ -1,15 +1,15 @@
-package frc.robot.commands.ElevatorCommands;
+package frc.robot.commands.EndEffectorCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 
-public class ElevatorDownCommand extends Command 
+public class ShootCommand extends Command 
 {
     private final double speed;
 
-    public ElevatorDownCommand(Double _speed)
+    public ShootCommand(Double _speed)
     {
-        addRequirements(RobotContainer.elevator);
+        addRequirements(RobotContainer.endEffector);
         speed = _speed;
     }
 
@@ -19,8 +19,7 @@ public class ElevatorDownCommand extends Command
     @Override
     public void execute() 
     {
-        RobotContainer.elevator.setSpeedElevator1(-speed);
-        RobotContainer.elevator.setSpeedElevator2(-speed);
+        RobotContainer.endEffector.setSpeedEndEffectorMotor(speed);
     }
 
     @Override
