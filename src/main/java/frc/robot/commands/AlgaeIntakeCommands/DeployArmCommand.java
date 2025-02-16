@@ -18,7 +18,7 @@ public class DeployArmCommand extends Command
 
     @Override
     public void execute() {
-        RobotContainer.algaeIntake.DeployArmTilt(speed);
+        RobotContainer.algaeIntake.setSpeedArmTilt(speed);
     }
 
     @Override

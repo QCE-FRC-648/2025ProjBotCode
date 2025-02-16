@@ -10,13 +10,28 @@ import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase
 {
-    private final SparkMax climberWinch = new SparkMax(ClimberConstants.kClimberWinchCANId, MotorType.kBrushless);
-    private final SparkMax climberGrab = new SparkMax(ClimberConstants.kClimberGrabCANId, MotorType.kBrushless);
-    
-    private PowerDistribution PDH;
+    private final SparkMax climberWinch;
+    private final SparkMax climberGrab;
     
     public ClimberSubsystem()
     {
+        climberWinch = new SparkMax(ClimberConstants.kClimberWinchCANId, MotorType.kBrushless);
+        climberGrab = new SparkMax(ClimberConstants.kClimberGrabCANId, MotorType.kBrushless);
+    }
 
+    public void Winch(double speed) 
+    {
+        climberWinch.set(speed);
+    }
+    
+    public void Grab(double speed) 
+    {
+        climberGrab.set(speed);
+    }
+
+    @Override
+    public void periodic()
+    {
+        
     }
 }

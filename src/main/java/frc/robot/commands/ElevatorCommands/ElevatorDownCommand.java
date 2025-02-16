@@ -1,15 +1,15 @@
-package frc.robot.commands.AlgaeIntakeCommands;
+package frc.robot.commands.ElevatorCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 
-public class IntakeRollerBar extends Command
+public class ElevatorDownCommand extends Command 
 {
     private final double speed;
 
-    public IntakeRollerBar(Double _speed)
+    public ElevatorDownCommand(Double _speed)
     {
-        addRequirements(RobotContainer.algaeIntake);
+        addRequirements(RobotContainer.climber);
         speed = _speed;
     }
 
@@ -18,7 +18,7 @@ public class IntakeRollerBar extends Command
 
     @Override
     public void execute() {
-        RobotContainer.algaeIntake.setSpeedRoller(speed);
+        RobotContainer.climber.Winch(speed);
     }
 
     @Override

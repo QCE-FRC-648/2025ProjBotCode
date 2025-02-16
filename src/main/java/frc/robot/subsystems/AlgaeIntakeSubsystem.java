@@ -8,25 +8,21 @@ import frc.robot.Constants.AlgaeIntakeConstants;
 
 public class AlgaeIntakeSubsystem extends SubsystemBase
 {
-    private final SparkMax algaeRoller = new SparkMax(AlgaeIntakeConstants.kAlgaeRollerCANId, MotorType.kBrushless);
-    private final SparkMax algaeTilt = new SparkMax(AlgaeIntakeConstants.kAlgaeTiltCANId, MotorType.kBrushless);
+    private final SparkMax algaeRoller;
+    private final SparkMax algaeTilt;
 
-    public void IntakeRoller(double speed) 
+    public AlgaeIntakeSubsystem()
+    {
+        algaeRoller = new SparkMax(AlgaeIntakeConstants.kAlgaeRollerCANId, MotorType.kBrushless);
+        algaeTilt = new SparkMax(AlgaeIntakeConstants.kAlgaeTiltCANId, MotorType.kBrushless);
+    }
+
+    public void setSpeedRoller(double speed) 
     {
         algaeRoller.set(speed);
     }
-
-    public void OuttakeRoller(double speed) 
-    {
-        algaeRoller.set(speed);
-    }
-
-    public void DeployArmTilt(double speed) 
-    {
-        algaeTilt.set(speed);
-    }
-
-    public void RetractArmTilt(double speed) 
+    
+    public void setSpeedArmTilt(double speed) 
     {
         algaeTilt.set(speed);
     }

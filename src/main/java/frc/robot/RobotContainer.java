@@ -6,6 +6,12 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AlgaeIntakeCommands.DeployArmCommand;
+import frc.robot.commands.AlgaeIntakeCommands.IntakeRollerBar;
+import frc.robot.commands.AlgaeIntakeCommands.OuttakeRollerBar;
+import frc.robot.commands.AlgaeIntakeCommands.RetractArmCommand;
+import frc.robot.commands.ClimberCommands.ExtendWinchCommand;
+import frc.robot.commands.ClimberCommands.GrabCageCommand;
+import frc.robot.commands.ClimberCommands.RetractWinchCommand;
 import frc.robot.subsystems.AlgaeIntakeSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -76,7 +82,15 @@ public class RobotContainer {
   private void configureBindings() 
   {
     // Algae Intake Commands
-    operatorController.a().whileTrue(new DeployArmCommand(0.5)); // TODO change speed
+    operatorController.a().whileTrue(new DeployArmCommand(0.1)); // TODO change speed and button
+    operatorController.b().whileTrue(new RetractArmCommand(0.1));
+    operatorController.leftBumper().whileTrue(new IntakeRollerBar(0.1));
+    operatorController.rightBumper().whileTrue(new OuttakeRollerBar(0.1));
+
+    // Climber
+    operatorController.leftTrigger().whileTrue(new ExtendWinchCommand(0.1));
+    operatorController.rightTrigger().whileTrue(new RetractWinchCommand(0.1));
+    operatorController.povDown().whileTrue(new GrabCageCommand(0.1));
   }
 
   /**
