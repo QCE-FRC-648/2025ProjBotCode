@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.subsystems.TestSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
 
@@ -25,12 +24,10 @@ import swervelib.SwerveInputStream;
 
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.algaeintake.*;
 import frc.robot.subsystems.climb.*;
 import frc.robot.subsystems.elevator.*;
 import frc.robot.subsystems.endeffector.*;
 import frc.robot.subsystems.swervedrive.*;
-import frc.robot.commands.AlgaeIntakeCommands.*;
 import frc.robot.commands.ClimberCommands.*;
 import frc.robot.commands.ElevatorCommands.*;
 import frc.robot.commands.EndEffectorCommands.*;
@@ -50,7 +47,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 // import frc.robot.subsystems.drive.DriveSubsystem;
 
 
-
+//https://docs.wpilib.org/en/stable/docs/software/hardware-apis/misc/addressable-leds.html
 
  /* This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
  * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
@@ -63,7 +60,6 @@ public class RobotContainer
 
   public static SwerveSubsystem driveTrain;
   public static ClimberSubsystem climber;
-  public static AlgaeIntakeSubsystem algaeIntake;
   public static ElevatorSubsystem elevator;
   public static EndEffectorSubsystem endEffector;
 
@@ -79,7 +75,7 @@ public class RobotContainer
   final       CommandXboxController operatorXbox = new CommandXboxController(1);
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem();
-  private final TestSubsystem         testmotor = new TestSubsystem();
+
   
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -144,7 +140,6 @@ public class RobotContainer
     
     driveTrain = new SwerveSubsystem();
     climber = new ClimberSubsystem();
-    algaeIntake = new AlgaeIntakeSubsystem();
     elevator = new ElevatorSubsystem();
     endEffector = new EndEffectorSubsystem();
 
@@ -157,15 +152,24 @@ public class RobotContainer
     driveTrain.setDefaultCommand(new RunCommand(
       //left joystick controls translation
       //right joystick controls rotation of the robot
-      () -> driveTrain.driveToDistanceCommand(
-        -MathUtil.applyDeadband(driverController.getLeftY(), OperatorConstants.DEADBAND), 
-        -MathUtil.applyDeadband(driverController.getLeftX(), OperatorConstants.DEADBAND) 
-        // -MathUtil.applyDeadband(driverController.getRightX(), OperatorConstants.DEADBAND), 
-        // true), 
-        ),
+      () -> driveTrain.driveCommand(-driverController.getLeftY(), driverController.getLeftX(), driverController.getRightX()),
       driveTrain));
-  }
 
+
+    climber.setDefaultCommand(new RunCommand(() -> {
+    }));
+
+    elevator.setDefaultCommand(new RunCommand(() -> {
+      elevator.setSpeed(-operatorController.getLeftY()*.1); //Multiply by .1 for testing
+    }));
+
+    endEffector.setDefaultCommand(new RunCommand(() -> {
+      endEffector.setSpeedEndEffectorTilt(-operatorController.getRightY()*.1);  //We are using this to test, the .1 is to make it go slow
+    }));
+
+
+  }
+ 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the
@@ -175,76 +179,29 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-     // Algae Intake Commands
-     operatorController.a().whileTrue(new DeployArmCommand(0.1)); // TODO change speed and button
-     operatorController.b().whileTrue(new RetractArmCommand(0.1));
-     operatorController.leftBumper().whileTrue(new IntakeRollerBar(0.1));
-     operatorController.rightBumper().whileTrue(new OuttakeRollerBar(0.1));
- 
-     // Climber
-     operatorController.leftTrigger().whileTrue(new ExtendWinchCommand(0.1));
-     operatorController.rightTrigger().whileTrue(new RetractWinchCommand(0.1));
-     operatorController.povDown().whileTrue(new GrabCageCommand(0.1));
- 
-     // Elevator
-     operatorController.povUp().whileTrue(new ElevatorUpCommand(0.1));
-     operatorController.povDown().whileTrue(new ElevatorDownCommand(0.1));
- 
-     // End Effector
-     operatorController.povLeft().whileTrue(new IntakeCommand(0.1));
-     operatorController.povRight().whileTrue(new ShootCommand(0.1));
-     operatorController.povCenter().whileTrue(new TiltCommand(0.1));
-
-    Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
-    Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-    Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
-    Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(
-        driveDirectAngle);
-    Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
-    Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
-    Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
-        driveDirectAngleKeyboard);
-
-    if (RobotBase.isSimulation())
-    {
-      drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
-    } else
-    {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-    }
-
-    if (Robot.isSimulation())
-    {
-      driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-      driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
-
-    }
-    if (DriverStation.isTest())
-    {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
      
-      operatorXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
-      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-      driverXbox.leftBumper().onTrue(Commands.none());
-      driverXbox.rightBumper().onTrue(Commands.none());
-      driverXbox.a().whileTrue(testmotor.manualSpeed(1.0));
-      driverXbox.b().whileTrue(testmotor.stopMotors());
-    } else
-    {
-      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-      // driverXbox.b().whileTrue(
-      //     drivebase.driveToPose(
-      //         new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-      //                         );
-      driverXbox.start().whileTrue(Commands.none());
-      driverXbox.back().whileTrue(Commands.none());
-      operatorXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.none());
-    }
+    //To do: Set Buttons, Set Speeds, Verify Directions
 
+    // Operator Controls
+    
+    operatorController.rightTrigger().whileTrue(new ShootCommand(-.1));
+    operatorController.leftTrigger().whileTrue(new ShootCommand(.1));
+
+    operatorController.rightBumper().whileTrue(new IntakeCommand(-.1));
+    operatorController.leftBumper().whileTrue(new IntakeCommand(.1));
+
+
+ 
+    // Driver Controls
+    driverController.y().onTrue(new InstantCommand(() -> {climber.LatchServo();}));
+    driverController.b().onTrue(new InstantCommand(() -> {climber.UnlatchServo();}));
+
+    driverController.rightTrigger().whileTrue(new ExtendWinchCommand(-.1));
+    driverController.leftTrigger().whileTrue(new ExtendWinchCommand(.1));
+
+    driverController.rightBumper().whileTrue(new GrabCageCommand(.1));
+    driverController.leftBumper().whileTrue(new GrabCageCommand(-1.));
+     
   }
 
   /**

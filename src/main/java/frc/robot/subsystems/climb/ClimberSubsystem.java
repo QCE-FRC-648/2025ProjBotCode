@@ -56,6 +56,9 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.CANConfig;
@@ -64,11 +67,13 @@ public class ClimberSubsystem extends SubsystemBase
 {
     private final SparkMax climberWinch;
     private final SparkMax climberGrab;
+    private Servo climberServo = new Servo(0);
     
     public ClimberSubsystem()
     {
         climberWinch = new SparkMax(CANConfig.CLIMB_WINCH, MotorType.kBrushless);
         climberGrab = new SparkMax(CANConfig.CLIMB_GRAB, MotorType.kBrushless);
+        climberServo.set(0);
     }
 
     public void Winch(double speed) 
@@ -81,10 +86,20 @@ public class ClimberSubsystem extends SubsystemBase
         climberGrab.set(speed);
     }
 
+
+    public void LatchServo(){
+        climberServo.set(0);
+    }
+
+    public void UnlatchServo(){
+        climberServo.set(.25);
+    }
+
     @Override
     public void periodic()
     {
-        
+        SmartDashboard.putNumber("Climber Servo Position", climberServo.get());
+        SmartDashboard.putNumber("Climber Winch Position", climberWinch.getEncoder().getPosition());
     }
 }
 
