@@ -4,12 +4,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.*;
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
  * described in the TimedRobot documentation. If you change the name of this class or the package after creating this
@@ -20,11 +19,14 @@ public class Robot extends TimedRobot
 
   private static Robot   instance;
   private        Command m_autonomousCommand;
-
+  private Debouncer m_debouncer;
+  PowerDistribution m_powerDist;
   private RobotContainer m_robotContainer;
+  private static final double kStallCurrent = 35; //Amps
+  private boolean isStalled = false;
 
   private Timer disabledTimer;
-
+  
   public Robot()
   {
     instance = this;
@@ -44,7 +46,10 @@ public class Robot extends TimedRobot
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
+    double debounceTime = .25;
+    DebounceType debounceType = DebounceType.kRising;
+    m_debouncer = new Debouncer(debounceTime, debounceType);
+    m_powerDist = new PowerDistribution();
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
@@ -141,6 +146,8 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic()
   {
+    double currentDraw = m_powerDist.getCurrent(8);
+    isStalled = m_debouncer.calculate(currentDraw > kStallCurrent);
   }
 
   @Override
@@ -172,5 +179,9 @@ public class Robot extends TimedRobot
   @Override
   public void simulationPeriodic()
   {
+  }
+  public static boolean isStalled(){
+    //  return isStalled;
+    return true;
   }
 }

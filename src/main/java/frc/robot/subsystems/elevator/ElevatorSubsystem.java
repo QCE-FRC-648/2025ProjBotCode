@@ -14,17 +14,17 @@ import frc.robot.Constants.CANConfig;
 public class ElevatorSubsystem extends SubsystemBase
 {
     private final SparkMax elevator1 = new SparkMax(CANConfig.ELEVATOR_LEFT, MotorType.kBrushless);
-    private final SparkMax elevator2 = new SparkMax(CANConfig.ELEVATOR_RIGHT, MotorType.kBrushless);;
-
+    private final SparkMax elevator2 = new SparkMax(CANConfig.ELEVATOR_RIGHT, MotorType.kBrushless);
     private SparkMaxConfig elevator1Config = new SparkMaxConfig();
     private SparkMaxConfig elevator2Config = new SparkMaxConfig();
+    private final SparkMax endEffectorTilt = new SparkMax(CANConfig.END_EFFECTOR_TILT, MotorType.kBrushless);   
     
     public ElevatorSubsystem()
     {
         elevator1Config.inverted(true);
         elevator2Config.inverted(false);
         elevator1.configure(elevator1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        elevator2.configure(elevator2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        elevator2.configure(elevator2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);     
     }
 
     public void setSpeedElevator1(double speed) 
@@ -37,9 +37,20 @@ public class ElevatorSubsystem extends SubsystemBase
         elevator2.set(speed);
     }
 
+    public void setSpeedEndEffectorTilt(double speed) 
+    {
+        endEffectorTilt.set(speed);
+    }
+
     public void setSpeed(double speed){
         elevator1.set(speed);
         elevator2.set(speed);
+    }
+    public double getPositionElevator1(){
+       return elevator1.getAbsoluteEncoder().getPosition();
+    }
+    public double getPositionElevator2(){
+        return elevator2.getAbsoluteEncoder().getPosition();
     }
 
     @Override
