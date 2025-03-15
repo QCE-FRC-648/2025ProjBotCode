@@ -10,7 +10,7 @@ public class IntakeCommand extends Command
 
     public IntakeCommand(Double _speed)
     {
-        addRequirements(RobotContainer.endEffector);
+        addRequirements(RobotContainer.intake);
         speed = _speed;
     }
 

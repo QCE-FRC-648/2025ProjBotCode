@@ -12,13 +12,11 @@ public class EndEffectorSubsystem extends SubsystemBase
 {
     private final SparkMax endEffectorMotor;
     private final SparkMax endEffectorTilt;
-    private final SparkMax endEffectorIntake;
 
     public EndEffectorSubsystem()
     {
         endEffectorMotor = new SparkMax(CANConfig.END_EFFECTOR_MOTOR, MotorType.kBrushless);
         endEffectorTilt = new SparkMax(CANConfig.END_EFFECTOR_TILT, MotorType.kBrushless);
-        endEffectorIntake = new SparkMax(CANConfig.END_EFFECTOR_INTAKE, MotorType.kBrushless);
     }
     
 
@@ -32,9 +30,6 @@ public class EndEffectorSubsystem extends SubsystemBase
         endEffectorTilt.set(speed);
     }
     
-    public void setSpeedEndEffectorIntake(double speed){
-        endEffectorIntake.set(speed);
-    }
 
     @Override
     public void periodic()
@@ -42,6 +37,5 @@ public class EndEffectorSubsystem extends SubsystemBase
         SmartDashboard.putNumber("End Effector Encoder", endEffectorMotor.getEncoder().getPosition());
         SmartDashboard.putNumber("End Effector Tilt", endEffectorTilt.getEncoder().getPosition());
         SmartDashboard.putNumber("End Effector Tilt Absolute Encoder", endEffectorTilt.getAlternateEncoder().getPosition());
-        SmartDashboard.putNumber("End Effector Intake", endEffectorIntake.getEncoder().getPosition());
     }
 }

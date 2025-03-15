@@ -17,7 +17,6 @@ public class ElevatorSubsystem extends SubsystemBase
 {
     private final SparkMax elevator1 = new SparkMax(CANConfig.ELEVATOR_LEFT, MotorType.kBrushless);
     private final SparkMax elevator2 = new SparkMax(CANConfig.ELEVATOR_RIGHT, MotorType.kBrushless);
-    private final SparkMax endEffectorTilt = new SparkMax(CANConfig.END_EFFECTOR_TILT, MotorType.kBrushless);
 
     private SparkMaxConfig elevator1Config = new SparkMaxConfig();
     private SparkMaxConfig elevator2Config = new SparkMaxConfig();
@@ -29,7 +28,7 @@ public class ElevatorSubsystem extends SubsystemBase
 
     private double inchesPerEncoder = (endingHeight - startingHeight)/(endingEncoder - startingEncoder);
 
-    private PIDController elevatorPID = new PIDController(.5,0,0);
+   private PIDController elevatorPID = new PIDController(.2,0,0);
     
     public ElevatorSubsystem()
     {
@@ -43,8 +42,7 @@ public class ElevatorSubsystem extends SubsystemBase
     }
 
     public void goToHeight(double height){
-        height = height - 15.25; //15.25 is starting height
-        double voltage = elevatorPID.calculate(this.getHeight(), height);
+        double voltage = elevatorPID.calculate(elevator1.getEncoder().getPosition(), height);
         if(Math.abs(voltage) > 3){
             voltage = (voltage)/Math.abs(voltage)*3;
         }
@@ -56,7 +54,14 @@ public class ElevatorSubsystem extends SubsystemBase
     public double getHeight(){
         return elevator1.getEncoder().getPosition()*inchesPerEncoder;
     }
+    public void setVoltage(double voltage) {
+        elevator1.setVoltage(voltage);
+        elevator2.setVoltage(voltage);
+    }
 
+    public boolean atSetpoint(){
+        return elevatorPID.atSetpoint();
+    }
 
     public void setSpeedElevator1(double speed) 
     {
@@ -66,10 +71,6 @@ public class ElevatorSubsystem extends SubsystemBase
     public void setSpeedElevator2(double speed) 
     {
         elevator2.set(speed);
-    }
-
-    public void setSpeedEndEffectorTilt(double speed){
-        endEffectorTilt.set(speed);
     }
 
     public void setSpeed(double speed){
