@@ -58,6 +58,7 @@ public class RobotContainer
   public static ClimberSubsystem climber = new ClimberSubsystem();
   public static ElevatorSubsystem elevator = new ElevatorSubsystem();
   public static EndEffectorSubsystem endEffector = new EndEffectorSubsystem();
+  public static Intake intake = new Intake();
 
   //Define Controllers
   public static CommandXboxController driverController = new CommandXboxController(0);
@@ -94,6 +95,7 @@ public class RobotContainer
 
     climber.setDefaultCommand(new RunCommand(() -> {
     }, climber));
+    intake.setDefaultCommand(new RunCommand(() -> {}, intake));
 
     elevator.setDefaultCommand(new RunCommand(() -> {
       elevator.setSpeed(-operatorController.getLeftY()*.1); //Multiply by .1 for testing
@@ -123,8 +125,8 @@ public class RobotContainer
 
     operatorController.rightBumper().whileTrue(new IntakeCommand(-.1));
     operatorController.leftBumper().whileTrue(new IntakeCommand(.1));
-
-
+    
+    
  
     // Driver Controls
     driverController.y().onTrue(new InstantCommand(() -> {climber.LatchServo();}));
