@@ -3,11 +3,14 @@ package frc.robot.subsystems.elevator;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -15,6 +18,8 @@ import frc.robot.Constants.CANConfig;
 
 public class ElevatorSubsystem extends SubsystemBase
 {
+    DigitalInput elevatorLowerSwitch;
+
     private final SparkMax elevator1 = new SparkMax(CANConfig.ELEVATOR_LEFT, MotorType.kBrushless);
     private final SparkMax elevator2 = new SparkMax(CANConfig.ELEVATOR_RIGHT, MotorType.kBrushless);
 
@@ -32,6 +37,8 @@ public class ElevatorSubsystem extends SubsystemBase
     
     public ElevatorSubsystem()
     {
+        elevatorLowerSwitch = new DigitalInput(2);
+
         elevator1Config.inverted(true);
         elevator2Config.inverted(false);
         elevator1Config.idleMode(IdleMode.kBrake);
@@ -50,6 +57,10 @@ public class ElevatorSubsystem extends SubsystemBase
         elevator1.setVoltage(voltage);
         elevator2.setVoltage(voltage);
 
+    }
+    public void resetEncoder(){
+        elevator1.getEncoder().setPosition(0);
+        elevator2.getEncoder().setPosition(0);
     }
     public double getHeight(){
         return elevator1.getEncoder().getPosition()*inchesPerEncoder;
@@ -78,7 +89,14 @@ public class ElevatorSubsystem extends SubsystemBase
         elevator2.set(speed);
     }
 
-    //elevator positions
+
+    public Boolean lowerLimitReached() {
+        if(elevatorLowerSwitch.get())
+            return false;
+            else{
+            return true;
+            }
+    }
     
 
     @Override
@@ -86,5 +104,6 @@ public class ElevatorSubsystem extends SubsystemBase
     {
         SmartDashboard.putNumber("Elevator Motor1 Position", elevator1.getEncoder().getPosition());
         SmartDashboard.putNumber("Elevator Motor2 Position", elevator2.getEncoder().getPosition());
+        SmartDashboard.putBoolean("Elevator Limit Switch", lowerLimitReached());
     }
 }

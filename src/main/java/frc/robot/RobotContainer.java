@@ -95,11 +95,41 @@ public class RobotContainer
 
 
     climber.setDefaultCommand(new RunCommand(() -> {
+         // Driver Controls
+    driverController.y().onTrue(new InstantCommand(() -> {climber.LatchServo();}));
+    driverController.b().onTrue(new InstantCommand(() -> {climber.UnlatchServo();}));
+
+    
+   if(driverController.rightTrigger().getAsBoolean()){
+    if(climber.lowerLimitReachedWinch()){
+      climber.setSpeed(0);
+      climber.resetEncoder();
+    }
+    climber.setSpeed(.2);
+   }
+   else if(driverController.leftTrigger().getAsBoolean()){
+    climber.setSpeed(-.2);
+   }
+    driverController.rightBumper().whileTrue(new GrabCageCommand(1.0));
+    driverController.leftBumper().whileTrue(new GrabCageCommand(-1.0));
+
     }, climber));
+
+
     intake.setDefaultCommand(new RunCommand(() -> {}, intake));
 
     elevator.setDefaultCommand(new RunCommand(() -> {
-      elevator.setSpeed(-operatorController.getLeftY()*.1); //Multiply by .1 for testing
+      //if the lower limit's been reached don't allow them to go down but allow them to go up. 
+      if(elevator.lowerLimitReached() == true && -operatorController.getLeftY() <= 0)  {
+         //Multiply by .1 for testing
+         elevator.resetEncoder();
+         elevator.setSpeed(0);
+         
+      }
+      else{
+        elevator.setSpeed(-operatorController.getLeftY()*.2);
+      }
+    
     }, elevator));
 
     endEffector.setDefaultCommand(new RunCommand(() -> {
@@ -131,15 +161,7 @@ public class RobotContainer
     operatorController.b().whileTrue(new ElevatorPreset(Constants.ElevatorConstants.L3Height,elevator));
     operatorController.a().whileTrue(new ElevatorPreset(Constants.ElevatorConstants.L4Height,elevator));
  
-    // Driver Controls
-    driverController.y().onTrue(new InstantCommand(() -> {climber.LatchServo();}));
-    driverController.b().onTrue(new InstantCommand(() -> {climber.UnlatchServo();}));
-
-    driverController.leftTrigger().whileTrue(new ExtendWinchCommand(-.2));
-    driverController.rightTrigger().whileTrue(new ExtendWinchCommand(.2));
-
-    driverController.rightBumper().whileTrue(new GrabCageCommand(1.0));
-    driverController.leftBumper().whileTrue(new GrabCageCommand(-1.0));
+ 
      
   }
   public void setMotorBrake(boolean brake)

@@ -47,13 +47,6 @@ public final class Constants
     public static final PIDConstants TURN_PID = new PIDConstants(0.5, 0, 0);
   }
   public static class ElevatorConstants{
-
-    public static final double startingHeight = 15.25;
-    public static final double endingHeight = 59.25;
-    public static final double startingEncoder = 0;
-    public static final double endingEncoder = 110;
-
-    public static final double inchesPerEncoder = (endingHeight - startingHeight)/(endingEncoder - startingEncoder);
     public static final double L1Height = 0;
     public static final double L2Height = 57;
     public static final double L3Height = 98;
