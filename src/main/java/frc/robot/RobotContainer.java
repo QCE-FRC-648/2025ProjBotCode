@@ -126,27 +126,36 @@ public class RobotContainer
       //if the lower limit's been reached don't allow them to go down but allow them to go up. 
       if(elevator.lowerLimitReached() == true && -operatorController.getLeftY() <= 0)  {
          //Multiply by .1 for testing
-         elevator.resetEncoder();
-         elevator.setSpeed(0);
-         if((endEffector.endEffectorTilt.getEncoder().getPosition() >= -1.2)||(endEffector.endEffectorTilt.getEncoder().getPosition() <= .4 )){
-         new TiltPreset(-.4,endEffector);
-         }
-         
+        elevator.resetEncoder();
+        elevator.setSpeed(0);
       }
       else{
-        if(endEffector.endEffectorTilt.getEncoder().getPosition() > 5.6)
-        {
-          elevator.setSpeed(-operatorController.getLeftY()*.6);
-        }
-        else{
-          endEffector.goToTilt(5.7);
-        }
+        // if(endEffector.endEffectorTilt.getEncoder().getPosition() > 5.6)
+        // {
+           elevator.setSpeed(-operatorController.getLeftY()*.9);
+        // }
+        // else{
+        //   endEffector.goToTilt(5.7);
+        // }
       }
     
     }, elevator));
 
     endEffector.setDefaultCommand(new RunCommand(() -> {
-      endEffector.setSpeedEndEffectorTilt(-operatorController.getRightY()*.1);  //We are using this to test, the .1 is to make it go slow
+      if(elevator.lowerLimitReached() == true /*&& -operatorController.getLeftY() <= 0*/) {        
+        if((endEffector.endEffectorTilt.getEncoder().getPosition() <= -.8)||(endEffector.endEffectorTilt.getEncoder().getPosition() >= 0 )){
+          if(endEffector.atSetPoint() == false){
+            endEffector.goToTilt(-.4);
+          }
+          else{
+            endEffector.setSpeedEndEffectorTilt(0);
+          }
+        }
+      }else if(elevator.elevator1.getEncoder().getPosition()>= 152) {
+        endEffector.setSpeedEndEffectorTilt(-operatorController.getRightY()*.1); //We are using this to test, the .1 is to make it go slow
+      }else{
+        endEffector.goToTilt(5.7); //this is the value to make sure the end effector clears the funnel
+      }
     }, endEffector));
   }
  
@@ -167,16 +176,22 @@ public class RobotContainer
     Command heightL2PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L2Height,elevator);
     Command heightL3PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L3Height,elevator);
     Command heightL4PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L4Height,elevator);
+    //Command heightA1PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.A1Height,elevator);
+    //Command heightA2PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.A2Height,elevator);
 
     Command tiltL1PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL1, endEffector);
     Command tiltL2PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL2, endEffector);
     Command tiltL3PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL3, endEffector);
     Command tiltL4PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL4, endEffector);
+    //Command tiltA1PresetCommand = new TiltPreset(Constants.tiltConstants.tiltA1, endEffector);
+    //Command tiltA2PresetCommand = new TiltPreset(Constants.tiltConstants.tiltA2, endEffector);
     
-    SequentialCommandGroup goToPresetL1 = new SequentialCommandGroup(tiltL1PresetCommand, heightL1PresetCommand);
-    SequentialCommandGroup goToPresetL2 = new SequentialCommandGroup(tiltL2PresetCommand, heightL2PresetCommand);
-    SequentialCommandGroup goToPresetL3 = new SequentialCommandGroup(tiltL3PresetCommand, heightL3PresetCommand);
-    SequentialCommandGroup goToPresetL4 = new SequentialCommandGroup(tiltL4PresetCommand, heightL4PresetCommand);
+    SequentialCommandGroup goToPresetL1 = new SequentialCommandGroup(heightL1PresetCommand, tiltL1PresetCommand);
+    SequentialCommandGroup goToPresetL2 = new SequentialCommandGroup(heightL2PresetCommand, tiltL2PresetCommand);
+    SequentialCommandGroup goToPresetL3 = new SequentialCommandGroup(heightL3PresetCommand, tiltL3PresetCommand);
+    SequentialCommandGroup goToPresetL4 = new SequentialCommandGroup(heightL4PresetCommand, tiltL4PresetCommand);
+    //SequentialCommandGroup goToPresetA1 = new SequentialCommandGroup(tiltA1PresetCommand, heightA1PresetCommand);
+    //SequentialCommandGroup goToPresetA2 = new SequentialCommandGroup(tiltA2PresetCommand, heightA2PresetCommand);
 
     operatorController.rightTrigger().whileTrue(new ShootCommand(-2.5));
     operatorController.leftTrigger().whileTrue(new ShootCommand(2.5));
@@ -187,6 +202,9 @@ public class RobotContainer
     operatorController.y().whileTrue(goToPresetL2);
     operatorController.b().whileTrue(goToPresetL3);
     operatorController.a().whileTrue(goToPresetL4);
+    //operatorController.povDown().whileTrue(goToPresetA1);
+    //operatorController.povUp().whileTrue(goToPresetA2);
+
  
  
      

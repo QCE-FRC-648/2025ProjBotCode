@@ -51,6 +51,8 @@ public final class Constants
     public static final double L2Height = 183;
     public static final double L3Height = 329;
     public static final double L4Height = 528;
+    public static final double A1Height = 104;
+    public static final double A2Height = 165;
   }
   public static class tiltConstants{
     public static double startingHeight = 15.25;
@@ -69,6 +71,8 @@ public final class Constants
     public static final double tiltL2 = 1.285715;
     public static final double tiltL3 = .928572;
     public static final double tiltL4 = .785715;
+    public static final double tiltA1 = 22.118935;
+    public static final double tiltA2 = 22.118935;
   }
 
   public static class SystemConfig {

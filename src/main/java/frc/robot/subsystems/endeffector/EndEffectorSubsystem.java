@@ -15,12 +15,13 @@ public class EndEffectorSubsystem extends SubsystemBase
     public final SparkMax endEffectorMotor;
     public final SparkMax endEffectorTilt;
 
-    private PIDController tiltPIDController = new PIDController(.1, 0.0, 0.0);
+    private PIDController tiltPIDController = new PIDController(.025, 0.0, 0.0);
 
     public EndEffectorSubsystem()
     {
         endEffectorMotor = new SparkMax(CANConfig.END_EFFECTOR_MOTOR, MotorType.kBrushless);
         endEffectorTilt = new SparkMax(CANConfig.END_EFFECTOR_TILT, MotorType.kBrushless);
+        tiltPIDController.setTolerance(.5);
     }
     
 
@@ -38,8 +39,7 @@ public class EndEffectorSubsystem extends SubsystemBase
         tiltPIDController.setPID(P, I, D); 
     }
 
-    public void goToTilt(double encoders){
-        encoders = encoders - tiltConstants.tiltOffset; 
+    public void goToTilt(double encoders){ 
         double speed = tiltPIDController.calculate(endEffectorTilt.getEncoder().getPosition(), encoders); 
         if(speed > .5){
             speed = (speed/Math.abs(speed))*.5;

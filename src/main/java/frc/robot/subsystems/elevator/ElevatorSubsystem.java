@@ -18,10 +18,10 @@ import frc.robot.Constants.CANConfig;
 
 public class ElevatorSubsystem extends SubsystemBase
 {
-    DigitalInput elevatorLowerSwitch;
+    public DigitalInput elevatorLowerSwitch;
 
-    private final SparkMax elevator1 = new SparkMax(CANConfig.ELEVATOR_LEFT, MotorType.kBrushless);
-    private final SparkMax elevator2 = new SparkMax(CANConfig.ELEVATOR_RIGHT, MotorType.kBrushless);
+    public final SparkMax elevator1 = new SparkMax(CANConfig.ELEVATOR_LEFT, MotorType.kBrushless);
+    public final SparkMax elevator2 = new SparkMax(CANConfig.ELEVATOR_RIGHT, MotorType.kBrushless);
 
     private SparkMaxConfig elevator1Config = new SparkMaxConfig();
     private SparkMaxConfig elevator2Config = new SparkMaxConfig();
@@ -37,7 +37,7 @@ public class ElevatorSubsystem extends SubsystemBase
     
     public ElevatorSubsystem()
     {
-        elevatorLowerSwitch = new DigitalInput(2);
+        this.elevatorLowerSwitch = new DigitalInput(2);
 
         elevator1Config.inverted(true);
         elevator2Config.inverted(false);
