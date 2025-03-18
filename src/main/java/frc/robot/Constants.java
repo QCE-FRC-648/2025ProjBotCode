@@ -47,10 +47,28 @@ public final class Constants
     public static final PIDConstants TURN_PID = new PIDConstants(0.5, 0, 0);
   }
   public static class ElevatorConstants{
-    public static final double L1Height = 0;
-    public static final double L2Height = 57;
-    public static final double L3Height = 98;
-    public static final double L4Height = 135;
+    public static final double L1Height = 20;
+    public static final double L2Height = 183;
+    public static final double L3Height = 329;
+    public static final double L4Height = 528;
+  }
+  public static class tiltConstants{
+    public static double startingHeight = 15.25;
+    public static double endingHeight = 59.25;
+    public static double startingEncoder = 0;
+    public static double endingEncoder = 110;
+
+    public static double inchesPerEncoder = (endingHeight - startingHeight)/(endingEncoder - startingEncoder);
+
+    public static final double tiltOffset = -5.928567; //Please put this in degrees and change it according to what you measure.
+
+    public static final double tiltMinSpeed = 1;
+    public static final double tiltMaxSpeed = 2.5;
+
+    public static final double tiltL1 = 3.380949;
+    public static final double tiltL2 = 1.285715;
+    public static final double tiltL3 = .928572;
+    public static final double tiltL4 = .785715;
   }
 
   public static class SystemConfig {

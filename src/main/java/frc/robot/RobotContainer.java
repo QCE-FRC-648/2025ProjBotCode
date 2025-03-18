@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 // import frc.robot.subsystems.drive.DriveSubsystem;
@@ -110,6 +111,9 @@ public class RobotContainer
    else if(driverController.leftTrigger().getAsBoolean()){
     climber.setSpeed(-.2);
    }
+   else{
+    climber.setSpeed(0);
+   }
     driverController.rightBumper().whileTrue(new GrabCageCommand(1.0));
     driverController.leftBumper().whileTrue(new GrabCageCommand(-1.0));
 
@@ -124,10 +128,19 @@ public class RobotContainer
          //Multiply by .1 for testing
          elevator.resetEncoder();
          elevator.setSpeed(0);
+         if((endEffector.endEffectorTilt.getEncoder().getPosition() >= -1.2)||(endEffector.endEffectorTilt.getEncoder().getPosition() <= .4 )){
+         new TiltPreset(-.4,endEffector);
+         }
          
       }
       else{
-        elevator.setSpeed(-operatorController.getLeftY()*.2);
+        if(endEffector.endEffectorTilt.getEncoder().getPosition() > 5.6)
+        {
+          elevator.setSpeed(-operatorController.getLeftY()*.6);
+        }
+        else{
+          endEffector.goToTilt(5.7);
+        }
       }
     
     }, elevator));
@@ -150,16 +163,30 @@ public class RobotContainer
     //To do: Set Buttons, Set Speeds, Verify Directions
 
     // Operator Controls
-    
-    operatorController.rightTrigger().whileTrue(new ShootCommand(-1.25));
-    operatorController.leftTrigger().whileTrue(new ShootCommand(1.25));
+    Command heightL1PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L1Height,elevator);
+    Command heightL2PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L2Height,elevator);
+    Command heightL3PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L3Height,elevator);
+    Command heightL4PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L4Height,elevator);
 
-    operatorController.rightBumper().whileTrue(new IntakeCommand(-.1));
-    operatorController.leftBumper().whileTrue(new IntakeCommand(.1));
-    operatorController.x().whileTrue(new ElevatorPreset(Constants.ElevatorConstants.L1Height,elevator));
-    operatorController.y().whileTrue(new ElevatorPreset(Constants.ElevatorConstants.L2Height,elevator));
-    operatorController.b().whileTrue(new ElevatorPreset(Constants.ElevatorConstants.L3Height,elevator));
-    operatorController.a().whileTrue(new ElevatorPreset(Constants.ElevatorConstants.L4Height,elevator));
+    Command tiltL1PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL1, endEffector);
+    Command tiltL2PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL2, endEffector);
+    Command tiltL3PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL3, endEffector);
+    Command tiltL4PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL4, endEffector);
+    
+    SequentialCommandGroup goToPresetL1 = new SequentialCommandGroup(tiltL1PresetCommand, heightL1PresetCommand);
+    SequentialCommandGroup goToPresetL2 = new SequentialCommandGroup(tiltL2PresetCommand, heightL2PresetCommand);
+    SequentialCommandGroup goToPresetL3 = new SequentialCommandGroup(tiltL3PresetCommand, heightL3PresetCommand);
+    SequentialCommandGroup goToPresetL4 = new SequentialCommandGroup(tiltL4PresetCommand, heightL4PresetCommand);
+
+    operatorController.rightTrigger().whileTrue(new ShootCommand(-2.5));
+    operatorController.leftTrigger().whileTrue(new ShootCommand(2.5));
+
+    operatorController.rightBumper().whileTrue(new IntakeCommand(-.2));
+    operatorController.leftBumper().whileTrue(new IntakeCommand(.2));
+    operatorController.x().whileTrue(goToPresetL1);
+    operatorController.y().whileTrue(goToPresetL2);
+    operatorController.b().whileTrue(goToPresetL3);
+    operatorController.a().whileTrue(goToPresetL4);
  
  
      
