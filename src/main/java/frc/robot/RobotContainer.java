@@ -143,18 +143,17 @@ public class RobotContainer
 
     endEffector.setDefaultCommand(new RunCommand(() -> {
       if(elevator.lowerLimitReached() == true /*&& -operatorController.getLeftY() <= 0*/) {        
-        if((endEffector.endEffectorTilt.getEncoder().getPosition() <= -.8)||(endEffector.endEffectorTilt.getEncoder().getPosition() >= 0 )){
-          if(endEffector.atSetPoint() == false){
+        //if((endEffector.endEffectorTilt.getEncoder().getPosition() <= -.8)||(endEffector.endEffectorTilt.getEncoder().getPosition() >= 0 )){
+          //if(endEffector.atSetPoint() == false){
             endEffector.goToTilt(-.4);
-          }
-          else{
-            endEffector.setSpeedEndEffectorTilt(0);
-          }
-        }
-      }else if(elevator.elevator1.getEncoder().getPosition()>= 152) {
-        endEffector.setSpeedEndEffectorTilt(-operatorController.getRightY()*.1); //We are using this to test, the .1 is to make it go slow
+          //}else{
+           // endEffector.setSpeedEndEffectorTilt(0);
+          //}
+        //}
+      }else if((elevator.elevator1.getEncoder().getPosition() <= 155)) {
+        endEffector.goToTilt(5.7);
       }else{
-        endEffector.goToTilt(5.7); //this is the value to make sure the end effector clears the funnel
+        endEffector.setSpeedEndEffectorTilt(-operatorController.getRightY()*.1); //We are using this to test, the .1 is to make it go slow //this is the value to make sure the end effector clears the funnel
       }
     }, endEffector));
   }
