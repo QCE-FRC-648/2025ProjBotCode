@@ -48,9 +48,9 @@ public final class Constants
   }
   public static class ElevatorConstants{
     public static final double L1Height = 20;
-    public static final double L2Height = 152;
-    public static final double L3Height = 287;
-    public static final double L4Height = 484;
+    public static final double L2Height = 173;
+    public static final double L3Height = 302;
+    public static final double L4Height = 507;
     public static final double A1Height = 104;
     public static final double A2Height = 165;
   }
@@ -83,7 +83,7 @@ public final class Constants
     public static final double SHOOTER_TOLERANCE = 2; // deg
     public static final double ELEVATOR_TOLERANCE = 0.1; // m
 
-    public static final double ELEVATOR_SPEED = 0.5;
+    public static final double ELEVATOR_SPEED = 0.7;
     public static final double PIVOT_SPEED = 0.5;
     public static final double SHOOTER_SPEED = 0.5;
     public static final double GRABBER_SPEED = 0.5;
@@ -102,7 +102,7 @@ public final class Constants
     public static final double SHOOTER_INTAKE_TIME = 0.5;
     public static final double CORAL_INTAKE_TIME = 1.0;
     public static final double CORAL_OUTTAKE_TIME = 1.0;
-    public static final double GRABBER_TIME = 3.0;
+    public static final double GRABBER_TIME = 1.0;
 
     public static final double CLIMBER_DEFAULT_POSITION = 0;
     public static final double CLIMBER_CLIMB_POSITION = 0.5;
@@ -125,6 +125,7 @@ public final class Constants
 
   public static class OperatorConstants
   {
+
 
     // Joystick Deadband
     public static final double DEADBAND        = 0.1;

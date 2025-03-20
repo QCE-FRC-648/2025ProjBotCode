@@ -33,7 +33,7 @@ public class ElevatorSubsystem extends SubsystemBase
 
     private double inchesPerEncoder = (endingHeight - startingHeight)/(endingEncoder - startingEncoder);
 
-   private PIDController elevatorPID = new PIDController(.2,0,0);
+   private PIDController elevatorPID = new PIDController(.8,0,0);
     
     public ElevatorSubsystem()
     {
@@ -50,8 +50,8 @@ public class ElevatorSubsystem extends SubsystemBase
 
     public void goToHeight(double height){
         double voltage = elevatorPID.calculate(elevator1.getEncoder().getPosition(), height);
-        if(Math.abs(voltage) > 6){
-            voltage = (voltage)/Math.abs(voltage)*6;
+        if(Math.abs(voltage) > 12){
+            voltage = (voltage)/Math.abs(voltage)*12;
         }
         SmartDashboard.putNumber("elevator PID Voltage", voltage);
         elevator1.setVoltage(voltage);

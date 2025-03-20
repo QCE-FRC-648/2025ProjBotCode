@@ -106,10 +106,10 @@ public class RobotContainer
       climber.setSpeed(0);
       climber.resetEncoder();
     }
-    climber.setSpeed(.2);
+    climber.setSpeed(3);
    }
    else if(driverController.leftTrigger().getAsBoolean()){
-    climber.setSpeed(-.2);
+    climber.setSpeed(-3);
    }
    else{
     climber.setSpeed(0);
@@ -132,7 +132,7 @@ public class RobotContainer
       else{
         // if(endEffector.endEffectorTilt.getEncoder().getPosition() > 5.6)
         // {
-           elevator.setSpeed(-operatorController.getLeftY()*.9);
+           elevator.setSpeed(-operatorController.getLeftY()*3);
         // }
         // else{
         //   endEffector.goToTilt(5.7);

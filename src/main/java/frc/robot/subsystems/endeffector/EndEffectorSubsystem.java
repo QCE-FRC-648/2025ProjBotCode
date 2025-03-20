@@ -15,7 +15,7 @@ public class EndEffectorSubsystem extends SubsystemBase
     public final SparkMax endEffectorMotor;
     public final SparkMax endEffectorTilt;
 
-    private PIDController tiltPIDController = new PIDController(.025, 0.0, 0.0);
+    private PIDController tiltPIDController = new PIDController(.06, 0.0, 0.0);
 
     public EndEffectorSubsystem()
     {
@@ -41,8 +41,8 @@ public class EndEffectorSubsystem extends SubsystemBase
 
     public void goToTilt(double encoders){ 
         double speed = tiltPIDController.calculate(endEffectorTilt.getEncoder().getPosition(), encoders); 
-        if(speed > .5){
-            speed = (speed/Math.abs(speed))*.5;
+        if(speed > .85){
+            speed = (speed/Math.abs(speed))*.85;
         }
         endEffectorTilt.set(speed);
     }
