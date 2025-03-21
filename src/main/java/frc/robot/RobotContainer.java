@@ -102,20 +102,22 @@ public class RobotContainer
 
     
    if(driverController.rightTrigger().getAsBoolean()){
-    if(climber.lowerLimitReachedWinch()){
-      climber.setSpeed(0);
-      climber.resetEncoder();
+      if(climber.lowerLimitReachedWinch()){
+        climber.setSpeed(0);
+        climber.resetEncoder();
+      }
+      else{
+        climber.setSpeed(.3);  
+      }
     }
-    climber.setSpeed(3);
-   }
-   else if(driverController.leftTrigger().getAsBoolean()){
-    climber.setSpeed(-3);
-   }
-   else{
-    climber.setSpeed(0);
-   }
-    driverController.rightBumper().whileTrue(new GrabCageCommand(1.0));
-    driverController.leftBumper().whileTrue(new GrabCageCommand(-1.0));
+    else if(driverController.leftTrigger().getAsBoolean()){
+      climber.setSpeed(-.3);
+    }
+    else{
+      climber.setSpeed(0);
+    }
+      driverController.rightBumper().whileTrue(new GrabCageCommand(1.0));
+      driverController.leftBumper().whileTrue(new GrabCageCommand(-1.0));
 
     }, climber));
 
@@ -132,7 +134,9 @@ public class RobotContainer
       else{
         // if(endEffector.endEffectorTilt.getEncoder().getPosition() > 5.6)
         // {
-           elevator.setSpeed(-operatorController.getLeftY()*3);
+           elevator.setSpeed(-operatorController.getLeftY()*3); //Brandon Note: I am unsure why we would multiply this by 3
+                                                                //Brandon Note: The max value for setSpeed is 1, 
+                                                                //Brandon Note: which would be pushing the left joystick all the way forward
         // }
         // else{
         //   endEffector.goToTilt(5.7);
