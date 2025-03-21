@@ -94,11 +94,8 @@ public class RobotContainer
 
     driveTrain.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-
-    climber.setDefaultCommand(new RunCommand(() -> {
+    climber.setDefaultCommand(Commands.run(() -> {
          // Driver Controls
-    driverController.y().onTrue(new InstantCommand(() -> {climber.LatchServo();}));
-    driverController.b().onTrue(new InstantCommand(() -> {climber.UnlatchServo();}));
 
     
    if(driverController.rightTrigger().getAsBoolean()){
@@ -114,15 +111,14 @@ public class RobotContainer
    else{
     climber.setSpeed(0);
    }
-    driverController.rightBumper().whileTrue(new GrabCageCommand(1.0));
-    driverController.leftBumper().whileTrue(new GrabCageCommand(-1.0));
+
 
     }, climber));
 
 
-    intake.setDefaultCommand(new RunCommand(() -> {}, intake));
+    intake.setDefaultCommand(new InstantCommand(() -> {}, intake));
 
-    elevator.setDefaultCommand(new RunCommand(() -> {
+    elevator.setDefaultCommand(new InstantCommand(() -> {
       //if the lower limit's been reached don't allow them to go down but allow them to go up. 
       if(elevator.lowerLimitReached() == true && -operatorController.getLeftY() <= 0)  {
          //Multiply by .1 for testing
@@ -141,7 +137,7 @@ public class RobotContainer
     
     }, elevator));
 
-    endEffector.setDefaultCommand(new RunCommand(() -> {
+    endEffector.setDefaultCommand(new InstantCommand(() -> {
       if(elevator.lowerLimitReached() == true /*&& -operatorController.getLeftY() <= 0*/) {        
         //if((endEffector.endEffectorTilt.getEncoder().getPosition() <= -.8)||(endEffector.endEffectorTilt.getEncoder().getPosition() >= 0 )){
           //if(endEffector.atSetPoint() == false){
@@ -192,21 +188,32 @@ public class RobotContainer
     //SequentialCommandGroup goToPresetA1 = new SequentialCommandGroup(tiltA1PresetCommand, heightA1PresetCommand);
     //SequentialCommandGroup goToPresetA2 = new SequentialCommandGroup(tiltA2PresetCommand, heightA2PresetCommand);
 
-    operatorController.rightTrigger().whileTrue(new ShootCommand(-2.5));
-    operatorController.leftTrigger().whileTrue(new ShootCommand(2.5));
+    // operatorController.rightTrigger().whileTrue(new ShootCommand(-2.5));
+    // operatorController.leftTrigger().whileTrue(new ShootCommand(2.5));
 
-    operatorController.rightBumper().whileTrue(new IntakeCommand(-.2));
-    operatorController.leftBumper().whileTrue(new IntakeCommand(.2));
-    operatorController.x().whileTrue(goToPresetL1);
-    operatorController.y().whileTrue(goToPresetL2);
-    operatorController.b().whileTrue(goToPresetL3);
-    operatorController.a().whileTrue(goToPresetL4);
+    // operatorController.rightBumper().whileTrue(new IntakeCommand(-.2));
+    // operatorController.leftBumper().whileTrue(new IntakeCommand(.2));
+    // operatorController.x().whileTrue(goToPresetL1);
+    // operatorController.y().whileTrue(goToPresetL2);
+    // operatorController.b().whileTrue(goToPresetL3);
+    // operatorController.a().whileTrue(goToPresetL4);
+
+
     //operatorController.povDown().whileTrue(goToPresetA1);
     //operatorController.povUp().whileTrue(goToPresetA2);
 
  
+    driverController.rightBumper()
+    .onTrue(new InstantCommand(() -> climber.Grab(1.00), climber))
+    .onFalse(new InstantCommand(() -> climber.Grab(0.0), climber));
+    
+    driverController.leftBumper()
+    .onTrue(new InstantCommand(() -> climber.Grab(-1.00), climber))
+    .onFalse(new InstantCommand(() -> climber.Grab(0.0), climber));
  
      
+    driverController.y().onTrue(new InstantCommand(() -> {climber.LatchServo();}));
+    driverController.b().onTrue(new InstantCommand(() -> {climber.UnlatchServo();}));
   }
   public void setMotorBrake(boolean brake)
   {
