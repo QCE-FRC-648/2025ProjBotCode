@@ -188,19 +188,19 @@ public class RobotContainer
     //SequentialCommandGroup goToPresetA1 = new SequentialCommandGroup(tiltA1PresetCommand, heightA1PresetCommand);
     //SequentialCommandGroup goToPresetA2 = new SequentialCommandGroup(tiltA2PresetCommand, heightA2PresetCommand);
 
-    // operatorController.rightTrigger().whileTrue(new ShootCommand(-2.5));
-    // operatorController.leftTrigger().whileTrue(new ShootCommand(2.5));
+    operatorController.rightTrigger().whileTrue(new ShootCommand(-2.5));
+    operatorController.leftTrigger().whileTrue(new ShootCommand(2.5));
 
-    // operatorController.rightBumper().whileTrue(new IntakeCommand(-.2));
-    // operatorController.leftBumper().whileTrue(new IntakeCommand(.2));
-    // operatorController.x().whileTrue(goToPresetL1);
-    // operatorController.y().whileTrue(goToPresetL2);
-    // operatorController.b().whileTrue(goToPresetL3);
-    // operatorController.a().whileTrue(goToPresetL4);
+    operatorController.rightBumper().whileTrue(new IntakeCommand(-.2));
+    operatorController.leftBumper().whileTrue(new IntakeCommand(.2));
+    operatorController.x().whileTrue(goToPresetL1);
+    operatorController.y().whileTrue(goToPresetL2);
+    operatorController.b().whileTrue(goToPresetL3);
+    operatorController.a().whileTrue(goToPresetL4);
 
 
-    //operatorController.povDown().whileTrue(goToPresetA1);
-    //operatorController.povUp().whileTrue(goToPresetA2);
+    // operatorController.povDown().whileTrue(goToPresetA1);
+    // operatorController.povUp().whileTrue(goToPresetA2);
 
  
     driverController.rightBumper()
