@@ -37,9 +37,11 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 // import frc.robot.subsystems.drive.DriveSubsystem;
@@ -58,6 +60,7 @@ public class RobotContainer
   public static ClimberSubsystem climber = new ClimberSubsystem();
   public static ElevatorSubsystem elevator = new ElevatorSubsystem();
   public static EndEffectorSubsystem endEffector = new EndEffectorSubsystem();
+  public static Intake intake = new Intake();
 
   //Define Controllers
   public static CommandXboxController driverController = new CommandXboxController(0);
@@ -75,7 +78,9 @@ public class RobotContainer
                                                             .withControllerRotationAxis(driverController::getRightX)
                                                             .deadband(OperatorConstants.DEADBAND)
                                                             .scaleTranslation(0.8)
-                                                            .allianceRelativeControl(true);
+                                                            .allianceRelativeControl(true)
+                                                            .cubeTranslationControllerAxis(true)
+                                                            .cubeRotationControllerAxis(true);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -86,21 +91,74 @@ public class RobotContainer
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
     autoChooser = AutoBuilder.buildAutoChooser("Pass The Line Auto");
-
+    SmartDashboard.putData("Auto Mode", autoChooser);
     Command driveFieldOrientedAnglularVelocity = driveTrain.driveFieldOriented(driveAngularVelocity);
 
     driveTrain.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
+    climber.setDefaultCommand(Commands.run(() -> {
+         // Driver Controls
 
-    climber.setDefaultCommand(new RunCommand(() -> {
+    
+   if(driverController.rightTrigger().getAsBoolean()){
+    if(climber.lowerLimitReachedWinch()){
+      climber.setSpeed(0);
+      climber.resetEncoder();
+    }
+    else{
+    climber.setSpeed(3);
+    }
+  }
+   else if(driverController.leftTrigger().getAsBoolean()){
+    climber.setSpeed(-3);
+   }
+   else{
+    climber.setSpeed(0);
+   }
+
+
     }, climber));
 
-    elevator.setDefaultCommand(new RunCommand(() -> {
-      elevator.setSpeed(-operatorController.getLeftY()*.1); //Multiply by .1 for testing
+
+    intake.setDefaultCommand(new InstantCommand(() -> {}, intake));
+
+    elevator.setDefaultCommand(new InstantCommand(() -> {
+      double joystick = -operatorController.getLeftY();
+
+      if (Math.abs(joystick) < 0.1)
+      {
+        elevator.goToHeight(elevator.getLastSetpoint());
+      }
+      else
+      {
+        //if the lower limit's been reached don't allow them to go down but allow them to go up. 
+        if(elevator.lowerLimitReached() == true && joystick <= 0)  {
+          //Multiply by .1 for testing
+          elevator.resetEncoder();
+          elevator.setSpeed(0);
+        }else 
+        {
+            // elevator.setSpeed(joystick);
+            joystick = handleDeadband(joystick, 0.1);
+            elevator.goToHeight(elevator.getLastSetpoint() + joystick * Constants.ElevatorConstants.L2Height / 50.0 / 2.0);
+        }
+      }
     }, elevator));
 
-    endEffector.setDefaultCommand(new RunCommand(() -> {
-      endEffector.setSpeedEndEffectorTilt(-operatorController.getRightY()*.1);  //We are using this to test, the .1 is to make it go slow
+    endEffector.setDefaultCommand(new InstantCommand(() -> {
+      if(elevator.lowerLimitReached() == true /*&& -operatorController.getLeftY() <= 0*/) {        
+        //if((endEffector.endEffectorTilt.getEncoder().getPosition() <= -.8)||(endEffector.endEffectorTilt.getEncoder().getPosition() >= 0 )){
+          //if(endEffector.atSetPoint() == false){
+            endEffector.goToTilt(-.4);
+          //}else{
+           // endEffector.setSpeedEndEffectorTilt(0);
+          //}
+        //}
+      }else if((elevator.elevator1.getEncoder().getPosition() <= 68)) {
+        endEffector.goToTilt(5.7);
+      }else{
+        endEffector.setSpeedEndEffectorTilt(-operatorController.getRightY()*.1); //We are using this to test, the .1 is to make it go slow //this is the value to make sure the end effector clears the funnel
+      }
     }, endEffector));
   }
  
@@ -117,25 +175,71 @@ public class RobotContainer
     //To do: Set Buttons, Set Speeds, Verify Directions
 
     // Operator Controls
+    Command heightL1PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L1Height,elevator);
+    Command heightL2PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L2Height,elevator);
+    Command heightL3PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L3Height,elevator);
+    Command heightL4PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L4Height,elevator);
+    //Command heightA1PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.A1Height,elevator);
+    //Command heightA2PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.A2Height,elevator);
+
+    Command tiltL1PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL1, endEffector);
+    Command tiltL2PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL2, endEffector);
+    Command tiltL3PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL3, endEffector);
+    Command tiltL4PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL4, endEffector);
+    //Command tiltA1PresetCommand = new TiltPreset(Constants.tiltConstants.tiltA1, endEffector);
+    //Command tiltA2PresetCommand = new TiltPreset(Constants.tiltConstants.tiltA2, endEffector);
     
-    operatorController.rightTrigger().whileTrue(new ShootCommand(-.1));
-    operatorController.leftTrigger().whileTrue(new ShootCommand(.1));
+    SequentialCommandGroup goToPresetL1 = new SequentialCommandGroup(heightL1PresetCommand, tiltL1PresetCommand);
+    SequentialCommandGroup goToPresetL2 = new SequentialCommandGroup(heightL2PresetCommand, tiltL2PresetCommand);
+    SequentialCommandGroup goToPresetL3 = new SequentialCommandGroup(heightL3PresetCommand, tiltL3PresetCommand);
+    SequentialCommandGroup goToPresetL4 = new SequentialCommandGroup(heightL4PresetCommand, tiltL4PresetCommand);
+    //SequentialCommandGroup goToPresetA1 = new SequentialCommandGroup(tiltA1PresetCommand, heightA1PresetCommand);
+    //SequentialCommandGroup goToPresetA2 = new SequentialCommandGroup(tiltA2PresetCommand, heightA2PresetCommand);
 
-    operatorController.rightBumper().whileTrue(new IntakeCommand(-.1));
-    operatorController.leftBumper().whileTrue(new IntakeCommand(.1));
+    // operatorController.rightTrigger().whileTrue(new ShootCommand(-2.5));
+    // operatorController.leftTrigger().whileTrue(new ShootCommand(2.5));
 
+    // operatorController.rightBumper().whileTrue(new IntakeCommand(-.2));
+    // operatorController.leftBumper().whileTrue(new IntakeCommand(.2));
+
+    operatorController.rightTrigger()
+    .onTrue(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(-2.5), endEffector))
+    .onFalse(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(0.0), endEffector));
+
+    operatorController.leftTrigger()
+    .onTrue(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(2.5), endEffector))
+    .onFalse(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(0.0), endEffector));
+
+    
+    operatorController.rightBumper()
+    .onTrue(new InstantCommand(() -> intake.intake(-0.2), intake))
+    .onFalse(new InstantCommand(() -> intake.intake(0.0), intake));
+    
+    operatorController.leftBumper()
+    .onTrue(new InstantCommand(() -> intake.intake(0.2), intake))
+    .onFalse(new InstantCommand(() -> intake.intake(0.0), intake));
+
+    operatorController.x().whileTrue(goToPresetL1);
+    operatorController.y().whileTrue(goToPresetL2);
+    operatorController.b().whileTrue(goToPresetL3);
+    operatorController.a().whileTrue(goToPresetL4);
+
+
+    // operatorController.povDown().whileTrue(goToPresetA1);
+    // operatorController.povUp().whileTrue(goToPresetA2);
 
  
-    // Driver Controls
+    driverController.rightBumper()
+    .onTrue(new InstantCommand(() -> climber.Grab(1.00), climber))
+    .onFalse(new InstantCommand(() -> climber.Grab(0.0), climber));
+    
+    driverController.leftBumper()
+    .onTrue(new InstantCommand(() -> climber.Grab(-1.00), climber))
+    .onFalse(new InstantCommand(() -> climber.Grab(0.0), climber));
+ 
+     
     driverController.y().onTrue(new InstantCommand(() -> {climber.LatchServo();}));
     driverController.b().onTrue(new InstantCommand(() -> {climber.UnlatchServo();}));
-
-    driverController.rightTrigger().whileTrue(new ExtendWinchCommand(-.1));
-    driverController.leftTrigger().whileTrue(new ExtendWinchCommand(.1));
-
-    driverController.rightBumper().whileTrue(new GrabCageCommand(.1));
-    driverController.leftBumper().whileTrue(new GrabCageCommand(-1.));
-     
   }
   public void setMotorBrake(boolean brake)
   {
@@ -150,6 +254,19 @@ public class RobotContainer
   {
     // Pass the auto line for points
     return autoChooser.getSelected();
+    // return driveTrain.getAutonomousCommand("Pass The Line Auto");
+  }
+
+
+  public static double handleDeadband(double value, double deadband)
+  {
+      deadband = Math.abs(deadband);
+      if (deadband == 1)
+      {
+          return 0;
+      }
+      double scaledValue = (value + (value < 0 ? deadband : -deadband)) / (1 - deadband);
+      return (Math.abs(value) > Math.abs(deadband)) ? scaledValue : 0;
   }
 }
 
