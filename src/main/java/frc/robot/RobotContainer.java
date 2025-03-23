@@ -123,22 +123,26 @@ public class RobotContainer
     intake.setDefaultCommand(new InstantCommand(() -> {}, intake));
 
     elevator.setDefaultCommand(new InstantCommand(() -> {
-      //if the lower limit's been reached don't allow them to go down but allow them to go up. 
-      if(elevator.lowerLimitReached() == true && -operatorController.getLeftY() <= 0)  {
-         //Multiply by .1 for testing
-        elevator.resetEncoder();
-        elevator.setSpeed(0);
-      
-       }else //
-        // if(endEffector.endEffectorTilt.getEncoder().getPosition() > 5.6)
-         {
-           elevator.setSpeed(-operatorController.getLeftY());
-        // }
-        // else{
-        //   endEffector.goToTilt(5.7);
-        // }
+      double joystick = -operatorController.getLeftY();
+
+      if (Math.abs(joystick) < 0.1)
+      {
+        elevator.goToHeight(elevator.getLastSetpoint());
       }
-    
+      else
+      {
+        //if the lower limit's been reached don't allow them to go down but allow them to go up. 
+        if(elevator.lowerLimitReached() == true && joystick <= 0)  {
+          //Multiply by .1 for testing
+          elevator.resetEncoder();
+          elevator.setSpeed(0);
+        }else 
+        {
+            // elevator.setSpeed(joystick);
+            joystick = handleDeadband(joystick, 0.1);
+            elevator.goToHeight(elevator.getLastSetpoint() + joystick * Constants.ElevatorConstants.L2Height / 50.0 / 2.0);
+        }
+      }
     }, elevator));
 
     endEffector.setDefaultCommand(new InstantCommand(() -> {
@@ -251,6 +255,18 @@ public class RobotContainer
     // Pass the auto line for points
     return autoChooser.getSelected();
     // return driveTrain.getAutonomousCommand("Pass The Line Auto");
+  }
+
+
+  public static double handleDeadband(double value, double deadband)
+  {
+      deadband = Math.abs(deadband);
+      if (deadband == 1)
+      {
+          return 0;
+      }
+      double scaledValue = (value + (value < 0 ? deadband : -deadband)) / (1 - deadband);
+      return (Math.abs(value) > Math.abs(deadband)) ? scaledValue : 0;
   }
 }
 

@@ -8,7 +8,9 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,6 +36,8 @@ public class ElevatorSubsystem extends SubsystemBase
     private double inchesPerEncoder = (endingHeight - startingHeight)/(endingEncoder - startingEncoder);
 
    private PIDController elevatorPID = new PIDController(1,0,0);
+
+   private double lastSetpoint = 0;
     
     public ElevatorSubsystem()
     {
@@ -50,21 +54,26 @@ public class ElevatorSubsystem extends SubsystemBase
 
     public void goToHeight(double height){
         double voltage = elevatorPID.calculate(elevator1.getEncoder().getPosition(), height);
-        if(Math.abs(voltage) > 2){
-            voltage = (voltage)/Math.abs(voltage)*2;
-        }
+        voltage = MathUtil.clamp(voltage, -4, 4);
         SmartDashboard.putNumber("elevator PID Voltage", voltage);
         elevator1.setVoltage(voltage);
         elevator2.setVoltage(voltage);
 
+        lastSetpoint = height;
     }
+
+    public double getLastSetpoint() {
+        return lastSetpoint;
+    }
+
     public void resetEncoder(){
         elevator1.getEncoder().setPosition(0);
         elevator2.getEncoder().setPosition(0);
     }
     public double getHeight(){
-        return elevator1.getEncoder().getPosition()*inchesPerEncoder;
+        return elevator1.getEncoder().getPosition();
     }
+    
     public void setVoltage(double voltage) {
         elevator1.setVoltage(voltage);
         elevator2.setVoltage(voltage);
