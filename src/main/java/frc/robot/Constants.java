@@ -69,8 +69,8 @@ public final class Constants
 
     public static final double tiltL1 = 3.380949;
     public static final double tiltL2 = 4.85710;
-    public static final double tiltL3 = .928572;
-    public static final double tiltL4 = 3.499997;
+    public static final double tiltL3 = 6.642862;
+    public static final double tiltL4 = 5.904757;
     public static final double tiltA1 = 22.118935;
     public static final double tiltA2 = 22.118935;
   }

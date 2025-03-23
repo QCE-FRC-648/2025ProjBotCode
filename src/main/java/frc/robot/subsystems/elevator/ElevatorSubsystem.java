@@ -33,7 +33,7 @@ public class ElevatorSubsystem extends SubsystemBase
 
     private double inchesPerEncoder = (endingHeight - startingHeight)/(endingEncoder - startingEncoder);
 
-   private PIDController elevatorPID = new PIDController(.8,0,0);
+   private PIDController elevatorPID = new PIDController(1,0,0);
     
     public ElevatorSubsystem()
     {

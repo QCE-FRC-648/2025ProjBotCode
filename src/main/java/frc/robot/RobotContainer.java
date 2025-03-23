@@ -103,8 +103,10 @@ public class RobotContainer
       climber.setSpeed(0);
       climber.resetEncoder();
     }
+    else{
     climber.setSpeed(3);
-   }
+    }
+  }
    else if(driverController.leftTrigger().getAsBoolean()){
     climber.setSpeed(-3);
    }
@@ -188,11 +190,29 @@ public class RobotContainer
     //SequentialCommandGroup goToPresetA1 = new SequentialCommandGroup(tiltA1PresetCommand, heightA1PresetCommand);
     //SequentialCommandGroup goToPresetA2 = new SequentialCommandGroup(tiltA2PresetCommand, heightA2PresetCommand);
 
-    operatorController.rightTrigger().whileTrue(new ShootCommand(-2.5));
-    operatorController.leftTrigger().whileTrue(new ShootCommand(2.5));
+    // operatorController.rightTrigger().whileTrue(new ShootCommand(-2.5));
+    // operatorController.leftTrigger().whileTrue(new ShootCommand(2.5));
 
-    operatorController.rightBumper().whileTrue(new IntakeCommand(-.2));
-    operatorController.leftBumper().whileTrue(new IntakeCommand(.2));
+    // operatorController.rightBumper().whileTrue(new IntakeCommand(-.2));
+    // operatorController.leftBumper().whileTrue(new IntakeCommand(.2));
+
+    operatorController.rightTrigger()
+    .onTrue(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(-2.5), endEffector))
+    .onFalse(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(0.0), endEffector));
+
+    operatorController.leftTrigger()
+    .onTrue(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(2.5), endEffector))
+    .onFalse(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(0.0), endEffector));
+
+    
+    operatorController.rightBumper()
+    .onTrue(new InstantCommand(() -> intake.intake(-0.2), intake))
+    .onFalse(new InstantCommand(() -> intake.intake(0.0), intake));
+    
+    operatorController.leftBumper()
+    .onTrue(new InstantCommand(() -> intake.intake(0.2), intake))
+    .onFalse(new InstantCommand(() -> intake.intake(0.0), intake));
+
     operatorController.x().whileTrue(goToPresetL1);
     operatorController.y().whileTrue(goToPresetL2);
     operatorController.b().whileTrue(goToPresetL3);
