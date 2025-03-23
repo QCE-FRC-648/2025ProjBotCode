@@ -50,8 +50,8 @@ public class ElevatorSubsystem extends SubsystemBase
 
     public void goToHeight(double height){
         double voltage = elevatorPID.calculate(elevator1.getEncoder().getPosition(), height);
-        if(Math.abs(voltage) > 12){
-            voltage = (voltage)/Math.abs(voltage)*12;
+        if(Math.abs(voltage) > 2){
+            voltage = (voltage)/Math.abs(voltage)*2;
         }
         SmartDashboard.putNumber("elevator PID Voltage", voltage);
         elevator1.setVoltage(voltage);

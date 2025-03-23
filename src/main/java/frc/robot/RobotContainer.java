@@ -126,11 +126,11 @@ public class RobotContainer
          //Multiply by .1 for testing
         elevator.resetEncoder();
         elevator.setSpeed(0);
-      }
-      else{
+      
+       }else //
         // if(endEffector.endEffectorTilt.getEncoder().getPosition() > 5.6)
-        // {
-           elevator.setSpeed(-operatorController.getLeftY()*3);
+         {
+           elevator.setSpeed(-operatorController.getLeftY());
         // }
         // else{
         //   endEffector.goToTilt(5.7);
@@ -148,7 +148,7 @@ public class RobotContainer
            // endEffector.setSpeedEndEffectorTilt(0);
           //}
         //}
-      }else if((elevator.elevator1.getEncoder().getPosition() <= 155)) {
+      }else if((elevator.elevator1.getEncoder().getPosition() <= 68)) {
         endEffector.goToTilt(5.7);
       }else{
         endEffector.setSpeedEndEffectorTilt(-operatorController.getRightY()*.1); //We are using this to test, the .1 is to make it go slow //this is the value to make sure the end effector clears the funnel
