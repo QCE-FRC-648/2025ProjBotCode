@@ -48,11 +48,11 @@ public final class Constants
   }
   public static class ElevatorConstants{
     public static final double L1Height = 20;
-    public static final double L2Height = 67;
-    public static final double L3Height = 117;
-    public static final double L4Height = 190;
-    public static final double A1Height = 104;
-    public static final double A2Height = 165;
+    public static final double L2Height = 62;
+    public static final double L3Height = 108;
+    public static final double L4Height = 193;
+    public static final double A1Height = 45;
+    public static final double A2Height = 72;
   }
   public static class tiltConstants{
     public static double startingHeight = 15.25;
@@ -70,7 +70,7 @@ public final class Constants
     public static final double tiltL1 = 3.380949;
     public static final double tiltL2 = 4.85710;
     public static final double tiltL3 = 6.642862;
-    public static final double tiltL4 = 5.904757;
+    public static final double tiltL4 = 3.071426;
     public static final double tiltA1 = 22.118935;
     public static final double tiltA2 = 22.118935;
   }

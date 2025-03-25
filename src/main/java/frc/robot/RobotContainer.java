@@ -75,7 +75,7 @@ public class RobotContainer
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(driveTrain.getSwerveDrive(),
                                                                 () -> driverController.getLeftY() * -1,
                                                                 () -> driverController.getLeftX() * -1)
-                                                            .withControllerRotationAxis(driverController::getRightX)
+                                                            .withControllerRotationAxis(() -> driverController.getRightX()*-1)
                                                             .deadband(OperatorConstants.DEADBAND)
                                                             .scaleTranslation(0.8)
                                                             .allianceRelativeControl(true)
@@ -140,7 +140,7 @@ public class RobotContainer
         {
             // elevator.setSpeed(joystick);
             joystick = handleDeadband(joystick, 0.1);
-            elevator.goToHeight(elevator.getLastSetpoint() + joystick * Constants.ElevatorConstants.L2Height / 50.0 / 2.0);
+            elevator.goToHeight(elevator.getLastSetpoint() + joystick * Constants.ElevatorConstants.L2Height / 50.0 / 1.0);
         }
       }
     }, elevator));
@@ -154,8 +154,8 @@ public class RobotContainer
            // endEffector.setSpeedEndEffectorTilt(0);
           //}
         //}
-      }else if((elevator.elevator1.getEncoder().getPosition() <= 68)) {
-        endEffector.goToTilt(5.7);
+      }else if((elevator.elevator1.getEncoder().getPosition() <= 30)) {
+        endEffector.goToTilt(6);
       }else{
         endEffector.setSpeedEndEffectorTilt(-operatorController.getRightY()*.1); //We are using this to test, the .1 is to make it go slow //this is the value to make sure the end effector clears the funnel
       }
@@ -179,22 +179,22 @@ public class RobotContainer
     Command heightL2PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L2Height,elevator);
     Command heightL3PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L3Height,elevator);
     Command heightL4PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.L4Height,elevator);
-    //Command heightA1PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.A1Height,elevator);
-    //Command heightA2PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.A2Height,elevator);
+    Command heightA1PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.A1Height,elevator);
+    Command heightA2PresetCommand = new ElevatorPreset(Constants.ElevatorConstants.A2Height,elevator);
 
     Command tiltL1PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL1, endEffector);
     Command tiltL2PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL2, endEffector);
     Command tiltL3PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL3, endEffector);
     Command tiltL4PresetCommand = new TiltPreset(Constants.tiltConstants.tiltL4, endEffector);
-    //Command tiltA1PresetCommand = new TiltPreset(Constants.tiltConstants.tiltA1, endEffector);
-    //Command tiltA2PresetCommand = new TiltPreset(Constants.tiltConstants.tiltA2, endEffector);
+    Command tiltA1PresetCommand = new TiltPreset(Constants.tiltConstants.tiltA1, endEffector);
+    Command tiltA2PresetCommand = new TiltPreset(Constants.tiltConstants.tiltA2, endEffector);
     
     SequentialCommandGroup goToPresetL1 = new SequentialCommandGroup(heightL1PresetCommand, tiltL1PresetCommand);
     SequentialCommandGroup goToPresetL2 = new SequentialCommandGroup(heightL2PresetCommand, tiltL2PresetCommand);
     SequentialCommandGroup goToPresetL3 = new SequentialCommandGroup(heightL3PresetCommand, tiltL3PresetCommand);
     SequentialCommandGroup goToPresetL4 = new SequentialCommandGroup(heightL4PresetCommand, tiltL4PresetCommand);
-    //SequentialCommandGroup goToPresetA1 = new SequentialCommandGroup(tiltA1PresetCommand, heightA1PresetCommand);
-    //SequentialCommandGroup goToPresetA2 = new SequentialCommandGroup(tiltA2PresetCommand, heightA2PresetCommand);
+    SequentialCommandGroup goToPresetA1 = new SequentialCommandGroup(tiltA1PresetCommand, heightA1PresetCommand);
+    SequentialCommandGroup goToPresetA2 = new SequentialCommandGroup(tiltA2PresetCommand, heightA2PresetCommand);
 
     // operatorController.rightTrigger().whileTrue(new ShootCommand(-2.5));
     // operatorController.leftTrigger().whileTrue(new ShootCommand(2.5));
@@ -225,8 +225,8 @@ public class RobotContainer
     operatorController.a().whileTrue(goToPresetL4);
 
 
-    // operatorController.povDown().whileTrue(goToPresetA1);
-    // operatorController.povUp().whileTrue(goToPresetA2);
+     operatorController.povDown().whileTrue(goToPresetA1);
+     operatorController.povUp().whileTrue(goToPresetA2);
 
  
     driverController.rightBumper()
