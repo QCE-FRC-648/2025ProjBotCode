@@ -53,7 +53,9 @@ public class Robot extends TimedRobot
     disabledTimer = new Timer();
 
     //start streaming the camera feed
-    CameraServer.startAutomaticCapture();
+    CameraServer.startAutomaticCapture(0);
+    CameraServer.startAutomaticCapture(1);
+  
 
     if (isSimulation())
     {

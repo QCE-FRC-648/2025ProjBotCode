@@ -47,6 +47,8 @@ public class ElevatorSubsystem extends SubsystemBase
         elevator2Config.inverted(false);
         elevator1Config.idleMode(IdleMode.kBrake);
         elevator2Config.idleMode(IdleMode.kBrake);
+        elevator1Config.smartCurrentLimit(40);
+        elevator2Config.smartCurrentLimit(40);
         elevator1.configure(elevator1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         elevator2.configure(elevator2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         elevatorPID.setTolerance(1);
