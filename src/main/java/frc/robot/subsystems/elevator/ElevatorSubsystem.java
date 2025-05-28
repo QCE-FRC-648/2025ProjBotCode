@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevator;
 
+import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -44,11 +45,13 @@ public class ElevatorSubsystem extends SubsystemBase
         this.elevatorLowerSwitch = new DigitalInput(2);
 
         elevator1Config.inverted(true);
-        elevator2Config.inverted(false);
+        // elevator2Config.inverted(false);
         elevator1Config.idleMode(IdleMode.kBrake);
         elevator2Config.idleMode(IdleMode.kBrake);
         elevator1Config.smartCurrentLimit(40);
         elevator2Config.smartCurrentLimit(40);
+        elevator2Config.follow(CANConfig.ELEVATOR_LEFT, true);
+
         elevator1.configure(elevator1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         elevator2.configure(elevator2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         elevatorPID.setTolerance(1);
@@ -61,7 +64,7 @@ public class ElevatorSubsystem extends SubsystemBase
         voltage = MathUtil.clamp(voltage, -12, 12);
         SmartDashboard.putNumber("elevator PID Voltage", voltage);
         elevator1.setVoltage(voltage);
-        elevator2.setVoltage(voltage);
+        // elevator2.setVoltage(voltage);
 
         lastSetpoint = height;
     }
@@ -71,8 +74,9 @@ public class ElevatorSubsystem extends SubsystemBase
     }
 
     public void resetEncoder(){
-        elevator1.getEncoder().setPosition(0);
-        elevator2.getEncoder().setPosition(0);
+        SmartDashboard.putBoolean("ElevatorZero1",elevator1.getEncoder().setPosition(0) == REVLibError.kOk);
+        
+        SmartDashboard.putBoolean("ElevatorZero2",elevator2.getEncoder().setPosition(0) == REVLibError.kOk);
     }
     public double getHeight(){
         return elevator1.getEncoder().getPosition();
@@ -80,7 +84,7 @@ public class ElevatorSubsystem extends SubsystemBase
     
     public void setVoltage(double voltage) {
         elevator1.setVoltage(voltage);
-        elevator2.setVoltage(voltage);
+        // elevator2.setVoltage(voltage);
     }
 
     public boolean atSetpoint(){
@@ -99,7 +103,7 @@ public class ElevatorSubsystem extends SubsystemBase
 
     public void setSpeed(double speed){
         elevator1.set(speed);
-        elevator2.set(speed);
+        // elevator2.set(speed);
     }
 
 
@@ -115,6 +119,8 @@ public class ElevatorSubsystem extends SubsystemBase
     @Override
     public void periodic()
     {
+        SmartDashboard.putNumber("Elevator Motor1 Temp", elevator1.getMotorTemperature());
+        SmartDashboard.putNumber("Elevator Motor2 Temp", elevator2.getMotorTemperature());
         SmartDashboard.putNumber("Elevator Motor1 Position", elevator1.getEncoder().getPosition());
         SmartDashboard.putNumber("Elevator Motor2 Position", elevator2.getEncoder().getPosition());
         SmartDashboard.putBoolean("Elevator Limit Switch", lowerLimitReached());

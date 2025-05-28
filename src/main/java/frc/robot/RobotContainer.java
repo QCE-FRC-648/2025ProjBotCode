@@ -60,7 +60,6 @@ public class RobotContainer
   public static ClimberSubsystem climber = new ClimberSubsystem();
   public static ElevatorSubsystem elevator = new ElevatorSubsystem();
   public static EndEffectorSubsystem endEffector = new EndEffectorSubsystem();
-  public static Intake intake = new Intake();
 
   //Define Controllers
   public static CommandXboxController driverController = new CommandXboxController(0);
@@ -119,9 +118,6 @@ public class RobotContainer
 
     }, climber));
 
-
-    intake.setDefaultCommand(new InstantCommand(() -> {}, intake));
-
     elevator.setDefaultCommand(new InstantCommand(() -> {
       double joystick = -operatorController.getLeftY();
 
@@ -154,8 +150,8 @@ public class RobotContainer
            // endEffector.setSpeedEndEffectorTilt(0);
           //}
         //}
-      }else if((elevator.elevator1.getEncoder().getPosition() <= 30)) {
-        endEffector.goToTilt(6);
+      }else if((elevator.elevator1.getEncoder().getPosition() <= 40)) {
+        endEffector.goToTilt(7);
       }else{
         endEffector.setSpeedEndEffectorTilt(-operatorController.getRightY()*.1); //We are using this to test, the .1 is to make it go slow //this is the value to make sure the end effector clears the funnel
       }
@@ -199,9 +195,6 @@ public class RobotContainer
     // operatorController.rightTrigger().whileTrue(new ShootCommand(-2.5));
     // operatorController.leftTrigger().whileTrue(new ShootCommand(2.5));
 
-    // operatorController.rightBumper().whileTrue(new IntakeCommand(-.2));
-    // operatorController.leftBumper().whileTrue(new IntakeCommand(.2));
-
     operatorController.rightTrigger()
     .onTrue(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(-2.5), endEffector))
     .onFalse(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(0.0), endEffector));
@@ -209,15 +202,6 @@ public class RobotContainer
     operatorController.leftTrigger()
     .onTrue(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(2.5), endEffector))
     .onFalse(new InstantCommand(() -> endEffector.setSpeedEndEffectorMotor(0.0), endEffector));
-
-    
-    operatorController.rightBumper()
-    .onTrue(new InstantCommand(() -> intake.intake(-0.2), intake))
-    .onFalse(new InstantCommand(() -> intake.intake(0.0), intake));
-    
-    operatorController.leftBumper()
-    .onTrue(new InstantCommand(() -> intake.intake(0.2), intake))
-    .onFalse(new InstantCommand(() -> intake.intake(0.0), intake));
 
     operatorController.x().whileTrue(goToPresetL1);
     operatorController.y().whileTrue(goToPresetL2);
@@ -227,8 +211,19 @@ public class RobotContainer
 
      operatorController.povDown().whileTrue(goToPresetA1);
      operatorController.povUp().whileTrue(goToPresetA2);
+     operatorController.povLeft()
+    .onTrue(new InstantCommand(() -> endEffector.feedCoralIntoEndEffector(-2.5), endEffector))
+    .onFalse(new InstantCommand(() -> endEffector.feedCoralIntoEndEffector(0.0), endEffector));
 
  
+    operatorController.rightBumper()
+    .onTrue(new InstantCommand(() -> endEffector.intake(-0.2), endEffector))
+    .onFalse(new InstantCommand(() -> endEffector.intake(0.0), endEffector));
+    
+    operatorController.leftBumper()
+    .onTrue(new InstantCommand(() -> endEffector.intake(0.2), endEffector))
+    .onFalse(new InstantCommand(() -> endEffector.intake(0.0), endEffector));
+
     driverController.rightBumper()
     .onTrue(new InstantCommand(() -> climber.Grab(1.00), climber))
     .onFalse(new InstantCommand(() -> climber.Grab(0.0), climber));
