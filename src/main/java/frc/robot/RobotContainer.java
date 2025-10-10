@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -118,23 +119,31 @@ public class RobotContainer
 
     // Operator Controls
     
-    operatorController.rightTrigger().whileTrue(new ShootCommand(-.1));
-    operatorController.leftTrigger().whileTrue(new ShootCommand(.1));
+    operatorController.rightTrigger().whileTrue(new ShootCommand(-1.0));
+    // operatorController.leftTrigger().whileTrue(new ShootCommand(.1));
 
-    operatorController.rightBumper().whileTrue(new IntakeCommand(-.1));
-    operatorController.leftBumper().whileTrue(new IntakeCommand(.1));
+    operatorController.leftBumper().whileTrue(new IntakeCommand(.3));
+    operatorController.rightBumper().whileTrue(new IntakeCommand(-.3));
+    // operatorController.leftBumper().whileTrue(new IntakeCommand(.1));
+    // operatorController.leftBumper().whileTrue(new ParallelCommandGroup(
+    //   new IntakeCommand(.1),
+    //   new ShootCommand(-.4)
+    // ));
+    operatorController.x().onTrue(new ElevatortoPositionCommand(0.5, 1));
+    operatorController.y().onTrue(new ElevatortoPositionCommand(0.5, 2));
+    operatorController.b().onTrue(new ElevatortoPositionCommand(0.5, 3));
+    operatorController.a().onTrue(new ElevatortoPositionCommand(0.5, 4));
+    operatorController.povDown().whileTrue(new ElevatorDownCommand(0.5));
 
-
- 
     // Driver Controls
     driverController.y().onTrue(new InstantCommand(() -> {climber.LatchServo();}));
     driverController.b().onTrue(new InstantCommand(() -> {climber.UnlatchServo();}));
 
-    driverController.rightTrigger().whileTrue(new ExtendWinchCommand(-.1));
-    driverController.leftTrigger().whileTrue(new ExtendWinchCommand(.1));
+    driverController.leftTrigger().whileTrue(new ExtendWinchCommand(-.1));
+    driverController.rightTrigger().whileTrue(new ExtendWinchCommand(.1));
 
-    driverController.rightBumper().whileTrue(new GrabCageCommand(.1));
-    driverController.leftBumper().whileTrue(new GrabCageCommand(-1.));
+    driverController.rightBumper().whileTrue(new GrabCageCommand(.4));
+    driverController.leftBumper().whileTrue(new GrabCageCommand(-.4));
      
   }
   public void setMotorBrake(boolean brake)

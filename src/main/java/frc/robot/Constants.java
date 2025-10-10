@@ -55,7 +55,7 @@ public final class Constants
     public static final double SHOOTER_TOLERANCE = 2; // deg
     public static final double ELEVATOR_TOLERANCE = 0.1; // m
 
-    public static final double ELEVATOR_SPEED = 0.5;
+    public static final double ELEVATOR_SPEED = 0.7;
     public static final double PIVOT_SPEED = 0.5;
     public static final double SHOOTER_SPEED = 0.5;
     public static final double GRABBER_SPEED = 0.5;
