@@ -79,8 +79,8 @@ public class RobotContainer
                                                             .deadband(OperatorConstants.DEADBAND)
                                                             .scaleTranslation(MathUtil.clamp(
                                                               Math.sqrt(driverController.getLeftX() * driverController.getLeftX() +
-                                                                        driverController.getLeftY() * driverController.getLeftY()), 0, 1))
-                                                            .scaleTranslation(MathUtil.clamp(Math.abs(driverController.getRightX()),0,1))
+                                                                        driverController.getLeftY() * driverController.getLeftY()), 0, .8))
+                                                            .scaleTranslation(MathUtil.clamp(Math.abs(driverController.getRightX()),0,.8))
                                                             .allianceRelativeControl(true);
 
   /**
