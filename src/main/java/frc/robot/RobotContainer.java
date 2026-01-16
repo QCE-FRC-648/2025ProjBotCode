@@ -211,7 +211,7 @@ public class RobotContainer
     //operatorController.povUp().whileTrue(goToPresetA2);
 
  
- 
+    driverController.rightBumper().whileTrue(driveTrain.aprilTagAim());
      
   }
   public void setMotorBrake(boolean brake)
