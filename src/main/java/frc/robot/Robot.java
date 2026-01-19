@@ -12,6 +12,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //adding the camera service
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// photonvision
+import org.photonvision.PhotonCamera;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
@@ -23,7 +27,9 @@ public class Robot extends TimedRobot
 
   private static Robot   instance;
   private        Command m_autonomousCommand;
-
+  private PhotonCamera camera;
+  private final double VISION_TURN_kP = 0.01;
+  private VisionSim visionSim;
   private RobotContainer m_robotContainer;
 
   private Timer disabledTimer;
@@ -54,6 +60,8 @@ public class Robot extends TimedRobot
 
     //start streaming the camera feed
     CameraServer.startAutomaticCapture();
+    camera = new PhotonCamera("Limelight 4");
+    visionSim = new VisionSim(camera);
 
     if (isSimulation())
     {
@@ -76,6 +84,12 @@ public class Robot extends TimedRobot
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // double omegaRps = Units.degresstoRotations(m_robotContainer.m_robotDrive.getTurnRate());
+    // var llMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName:"limelight 4");
+    // if(llMeasurement != null && llMeasurement.tagCount > 0 && Math.abs(omegaRps) < 2.0){
+    //   m_robotContainer.m_robotDrive.resetOdometry(llMeasurement.pose);
+    // }
   }
 
   /**
@@ -147,6 +161,27 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic()
   {
+    // Read in relevant data from the Camera
+    boolean targetVisible = false;
+    double targetYaw = 0.0;
+    var results = camera.getAllUnreadResults();
+    if (!results.isEmpty()) {
+      // Camera processed a new frame since last
+      // Get the last one in the list.
+      var result = results.get(results.size() - 1);
+      if (result.hasTargets()) {
+          // At least one AprilTag was seen by the camera
+        for (var target : result.getTargets()) {
+          if (target.getFiducialId() == 7) {
+              // Found Tag 7, record its information
+              targetYaw = target.getYaw();
+              targetVisible = true;
+          }
+        }
+      }
+    }
+
+    SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
   }
 
   @Override
